@@ -35,10 +35,10 @@ public class DefaultPipelineConfig implements PipelineConfig {
     }
 
     public List<RepositoryBean> getRepositories() {
-        return bean.repos;
+        return bean.getRepos();
     }
 
     public List<ViewBean> getViews() {
-        return bean.views;
+        return bean.getViews();
     }
 }

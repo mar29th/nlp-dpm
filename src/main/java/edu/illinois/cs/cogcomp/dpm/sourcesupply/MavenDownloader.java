@@ -4,6 +4,10 @@ import com.tobedevoured.naether.NaetherException;
 import com.tobedevoured.naether.api.Naether;
 import com.tobedevoured.naether.impl.NaetherImpl;
 
+import edu.illinois.cs.cogcomp.dpm.listener.OnDownloaderStatusUpdateListener;
+import edu.illinois.cs.cogcomp.dpm.listener.StatusUpdateEvent;
+import edu.illinois.cs.cogcomp.dpm.listener.StopApplicationException;
+import org.apache.commons.lang3.StringUtils;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.repository.RemoteRepository;
 
@@ -22,6 +26,7 @@ public class MavenDownloader implements Downloader {
 
     private GlobalConfig globalConfig = null;
     private PipelineConfig pipelineConfig = null;
+    private OnDownloaderStatusUpdateListener listener = null;
 
     @Inject
     public MavenDownloader(GlobalConfig globalConfig, PipelineConfig pipelineConfig) {
@@ -31,13 +36,14 @@ public class MavenDownloader implements Downloader {
 
     public void download(List<Dependency> dependencyList, String destDir) throws NaetherException {
         Naether aether = new NaetherImpl();
+        listener.onUpdate(new StatusUpdateEvent(StatusUpdateEvent.Type.DOWNLOADER_STARTED));
 
         Set<RemoteRepository> remoteRepos = new HashSet<>();
         List<RepositoryBean> pipelineRepos = pipelineConfig.getRepositories();
         for (RepositoryBean pipelineRepo : pipelineRepos) {
             remoteRepos.add(new RemoteRepository(
-                pipelineRepo.name,
-                "default", pipelineRepo.location));
+                pipelineRepo.getName(),
+                "default", pipelineRepo.getLocation()));
         }
         aether.setRemoteRepositories(remoteRepos);
 
@@ -46,6 +52,25 @@ public class MavenDownloader implements Downloader {
         }
         aether.setLocalRepoPath(globalConfig.getMavenRepoPath());
         aether.resolveDependencies(); // Block on current thread and is time consuming
-        aether.downloadArtifacts(new ArrayList<>(aether.getDependenciesNotation()));
+        List<String> resolvedDependencies = new ArrayList<>(aether.getDependenciesNotation());
+
+        StatusUpdateEvent event = new StatusUpdateEvent(StatusUpdateEvent.Type.DOWNLOADER_UPDATE);
+        event.putValue("dependencies", resolvedDependencies);
+        listener.onUpdate(event);
+
+        aether.downloadArtifacts(resolvedDependencies);
+
+        event = new StatusUpdateEvent(StatusUpdateEvent.Type.DOWNLOADER_COMPLETED);
+        listener.onUpdate(event);
+    }
+
+    @Override
+    public void setOnDownloaderStatusUpdateListener(OnDownloaderStatusUpdateListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public OnDownloaderStatusUpdateListener getOnDownloaderStatusUpdateListener() {
+        return listener;
     }
 }
