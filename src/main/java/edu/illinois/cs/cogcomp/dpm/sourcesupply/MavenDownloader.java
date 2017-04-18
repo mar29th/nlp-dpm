@@ -6,7 +6,6 @@ import com.tobedevoured.naether.impl.NaetherImpl;
 
 import edu.illinois.cs.cogcomp.dpm.listener.OnDownloaderStatusUpdateListener;
 import edu.illinois.cs.cogcomp.dpm.listener.StatusUpdateEvent;
-import edu.illinois.cs.cogcomp.dpm.listener.StopApplicationException;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.repository.RemoteRepository;
 

@@ -7,6 +7,9 @@ public class PipelineConfigBean {
     private List<RepositoryBean> repos = new ArrayList<>();
     private List<ViewBean> views = new ArrayList<>();
 
+    public PipelineConfigBean() {
+    }
+
     public PipelineConfigBean(List<RepositoryBean> repos, List<ViewBean> views) {
         this.repos = repos;
         this.views = views;
