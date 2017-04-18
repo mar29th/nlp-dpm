@@ -4,6 +4,11 @@ public class RepositoryBean {
     private String name;
     private String location;
 
+    public RepositoryBean(String name, String location) {
+        this.name = name;
+        this.location = location;
+    }
+
     public String getName() {
         return name;
     }

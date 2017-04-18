@@ -9,6 +9,19 @@ public class ViewBean {
     private String entrypoint;
     private Map<String, Object> options;
 
+    public ViewBean(
+            String groupId,
+            String artifactId,
+            String version,
+            String entrypoint,
+            Map<String, Object> options) {
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.version = version;
+        this.entrypoint = entrypoint;
+        this.options = options;
+    }
+
     public String getGroupId() {
         return groupId;
     }
