@@ -11,7 +11,6 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,6 @@ import edu.illinois.cs.cogcomp.dpm.config.StandardConfigModule;
 import edu.illinois.cs.cogcomp.dpm.config.bean.ViewBean;
 import edu.illinois.cs.cogcomp.dpm.module.Loader;
 import edu.illinois.cs.cogcomp.dpm.sourcesupply.Downloader;
-import sun.tools.java.ClassNotFound;
 
 public class Application {
 

@@ -2,7 +2,6 @@ package edu.illinois.cs.cogcomp.dpm.test.integration;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.Computer;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
