@@ -9,6 +9,7 @@ import edu.illinois.cs.cogcomp.dpm.listener.StatusUpdateEvent;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.repository.RemoteRepository;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,13 +27,22 @@ public class MavenDownloader implements Downloader {
     private PipelineConfig pipelineConfig = null;
     private OnDownloaderStatusUpdateListener listener = null;
 
+    private class DummyDownloaderStatusUpdateListener implements OnDownloaderStatusUpdateListener {
+
+        @Override
+        public void onUpdate(StatusUpdateEvent event) {
+
+        }
+    }
+
     @Inject
     public MavenDownloader(GlobalConfig globalConfig, PipelineConfig pipelineConfig) {
         this.globalConfig = globalConfig;
         this.pipelineConfig = pipelineConfig;
+        this.listener = new DummyDownloaderStatusUpdateListener();
     }
 
-    public void download(List<Dependency> dependencyList, String destDir) throws NaetherException {
+    public List<File> download(List<Dependency> dependencyList, String destDir) throws NaetherException {
         Naether aether = new NaetherImpl();
         listener.onUpdate(new StatusUpdateEvent(StatusUpdateEvent.Type.DOWNLOADER_STARTED));
 
@@ -56,10 +66,12 @@ public class MavenDownloader implements Downloader {
         event.putValue("dependencies", resolvedDependencies);
         listener.onUpdate(event);
 
-        aether.downloadArtifacts(resolvedDependencies);
+        List<File> returned = aether.downloadArtifacts(resolvedDependencies);
 
         event = new StatusUpdateEvent(StatusUpdateEvent.Type.DOWNLOADER_COMPLETED);
         listener.onUpdate(event);
+
+        return returned;
     }
 
     @Override
