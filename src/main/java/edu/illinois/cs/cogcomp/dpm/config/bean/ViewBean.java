@@ -8,6 +8,8 @@ public class ViewBean {
     private String artifactId;
     private String version;
     private String entrypoint;
+    private String cacheKey;
+
     private Map<String, Object> options;
 
     public ViewBean(String groupId) {
@@ -69,6 +71,14 @@ public class ViewBean {
 
     public void setEntrypoint(String entrypoint) {
         this.entrypoint = entrypoint;
+    }
+
+    public String getCacheKey() {
+        return cacheKey;
+    }
+
+    public void setCacheKey(String cacheKey) {
+        this.cacheKey = cacheKey;
     }
 
     public Map<String, Object> getOptions() {

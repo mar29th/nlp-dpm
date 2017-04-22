@@ -1,5 +1,15 @@
 package edu.illinois.cs.cogcomp.dpm.runner;
 
+import edu.illinois.cs.cogcomp.annotation.Annotator;
+import edu.illinois.cs.cogcomp.annotation.AnnotatorException;
+import edu.illinois.cs.cogcomp.annotation.AnnotatorServiceConfigurator;
+import edu.illinois.cs.cogcomp.annotation.BasicAnnotatorService;
+import edu.illinois.cs.cogcomp.annotation.BasicTextAnnotationBuilder;
+import edu.illinois.cs.cogcomp.annotation.TextAnnotationBuilder;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
+import edu.illinois.cs.cogcomp.core.utilities.configuration.Configurator;
+import edu.illinois.cs.cogcomp.core.utilities.configuration.Property;
+import edu.illinois.cs.cogcomp.core.utilities.configuration.ResourceManager;
 import edu.illinois.cs.cogcomp.dpm.listener.OnDownloaderStatusUpdateListener;
 import edu.illinois.cs.cogcomp.dpm.listener.StatusUpdateEvent;
 import edu.illinois.cs.cogcomp.dpm.listener.OnApplicationStatusUpdateListener;
@@ -11,8 +21,12 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -24,8 +38,12 @@ import edu.illinois.cs.cogcomp.dpm.config.StandardConfigModule;
 import edu.illinois.cs.cogcomp.dpm.config.bean.ViewBean;
 import edu.illinois.cs.cogcomp.dpm.module.Loader;
 import edu.illinois.cs.cogcomp.dpm.sourcesupply.Downloader;
+import edu.illinois.cs.cogcomp.nlp.tokenizer.StatefulTokenizer;
+import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 
 public class Application {
+
+    private static final boolean SPLIT_ON_DASH = false;
 
     private GlobalConfig globalConfig = null;
     private PipelineConfig pipelineConfig = null;
@@ -99,8 +117,7 @@ public class Application {
     }
 
     private void init() {
-        // Check for global correctness
-        // 1. Check if Maven repo exists
+        // Check if Maven repo exists
         File f = new File(globalConfig.getMavenRepoPath());
         if (!f.exists()) {
             // If not then create
@@ -108,7 +125,7 @@ public class Application {
         }
     }
 
-    public void run() {
+    public String run(String text) {
         listener.onStarted();
 
         // Extract dependencies from PipelineConfig
@@ -124,23 +141,55 @@ public class Application {
         } catch (Exception e) {
             logger.error("Error when downloading dependencies", e);
             listener.onError(e);
-            return;
+            return null;
         }
 
         /*
          * For each view, load from Maven repo, get method by reflection and execute.
          */
+        Map<String, Annotator> annotators = new HashMap<>();
+
         for (ViewBean view : views) {
+            Class<?> clazz = null;
             try {
-                Class<?> clazz = loader.load(view.getEntrypoint());
+                clazz = loader.load(view.getEntrypoint());
+                Method getAnnotatorMethod = clazz.getMethod("getAnnotator");
+                Object instance = clazz.newInstance();
+                Annotator annotator = (Annotator) getAnnotatorMethod.invoke(instance);
+                annotators.put(annotator.getViewName(), annotator);
             } catch (ClassNotFoundException e) {
                 String errorText = "Failed to load class " +
                         view.getEntrypoint() + " for dependency " +
                         view.getGroupId() + "." + view.getArtifactId();
                 logger.error(errorText, e);
                 listener.onError(e);
-                return;
+                return null;
+            } catch (IllegalAccessException e) {
+                logger.error("Should not happen", e);
+                return null;
+            } catch (InstantiationException e) {
+                logger.error("Should not happen", e);
+                return null;
+            } catch (NoSuchMethodException e) {
+                String errorText = "No getAnnotator() method in " + clazz.getName();
+                logger.error(errorText, e);
+                return null;
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+                return null;
             }
+        }
+
+        // Now we have a map of annotators. Run AnnotatorService
+        TextAnnotationBuilder builder = new TokenizerTextAnnotationBuilder(new StatefulTokenizer(SPLIT_ON_DASH));
+        ResourceManager rm = new AnnotatorServiceConfigurator().getDefaultConfig();
+        try {
+            BasicAnnotatorService bas = new BasicAnnotatorService(builder, annotators, rm);
+            TextAnnotation ta = bas.createAnnotatedTextAnnotation("", "", text);
+            return ta.toString();
+        } catch (AnnotatorException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
