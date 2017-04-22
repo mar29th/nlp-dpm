@@ -166,9 +166,11 @@ public class Application {
                 return null;
             } catch (IllegalAccessException e) {
                 logger.error("Should not happen", e);
+                listener.onError(e);
                 return null;
             } catch (InstantiationException e) {
                 logger.error("Should not happen", e);
+                listener.onError(e);
                 return null;
             } catch (NoSuchMethodException e) {
                 String errorText = "No getAnnotator() method in " + clazz.getName();
@@ -176,6 +178,7 @@ public class Application {
                 return null;
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
+                listener.onError(e);
                 return null;
             }
         }
