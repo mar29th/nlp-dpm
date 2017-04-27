@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.dpm.test.integration;
+package edu.illinois.cs.cogcomp.dpm.test.moduleloading.integration;
 
 import dagger.Component;
 import edu.illinois.cs.cogcomp.dpm.config.GlobalConfig;

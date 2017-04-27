@@ -36,7 +36,8 @@ public class MockPipelineConfig implements PipelineConfig {
     @Override
     public List<ViewBean> getViews() {
         return Collections.singletonList(
-            new ViewBean("edu.illinois.edu.cogcomp", "illinois-ner", "3.1.11", "")
+            new ViewBean(
+                    "edu.illinois.edu.cogcomp", "illinois-ner", "3.1.11", "edu.illinois.cs.cogcomp.dpm.test.MockPackageInterface")
         );
     }
 }

@@ -125,7 +125,7 @@ public class Application {
         }
     }
 
-    public String run(String text) {
+    public String run(String text) throws ApplicationException {
         listener.onStarted();
 
         // Extract dependencies from PipelineConfig
@@ -161,25 +161,16 @@ public class Application {
                 String errorText = "Failed to load class " +
                         view.getEntrypoint() + " for dependency " +
                         view.getGroupId() + "." + view.getArtifactId();
-                logger.error(errorText, e);
-                listener.onError(e);
-                return null;
+                throw new ApplicationException(errorText, e);
             } catch (IllegalAccessException e) {
-                logger.error("Should not happen", e);
-                listener.onError(e);
-                return null;
+                throw new ApplicationException("Should not happen", e);
             } catch (InstantiationException e) {
-                logger.error("Should not happen", e);
-                listener.onError(e);
-                return null;
+                throw new ApplicationException("Should not happen", e);
             } catch (NoSuchMethodException e) {
                 String errorText = "No getAnnotator() method in " + clazz.getName();
-                logger.error(errorText, e);
-                return null;
+                throw new ApplicationException(errorText, e);
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
-                listener.onError(e);
-                return null;
+                throw new ApplicationException("getAnnotator() throws an exception", e);
             }
         }
 

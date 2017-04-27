@@ -1,5 +1,6 @@
-package edu.illinois.cs.cogcomp.dpm.test.integration;
+package edu.illinois.cs.cogcomp.dpm.test.moduleloading.integration;
 
+import edu.illinois.cs.cogcomp.dpm.test.MockPipelineConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonatype.aether.graph.Dependency;
@@ -15,7 +16,6 @@ import edu.illinois.cs.cogcomp.dpm.config.PipelineConfig;
 import edu.illinois.cs.cogcomp.dpm.config.StandardConfigModule;
 import edu.illinois.cs.cogcomp.dpm.module.Loader;
 import edu.illinois.cs.cogcomp.dpm.sourcesupply.Downloader;
-import edu.illinois.cs.cogcomp.dpm.test.MockPipelineConfig;
 
 import static org.junit.Assert.*;
 
