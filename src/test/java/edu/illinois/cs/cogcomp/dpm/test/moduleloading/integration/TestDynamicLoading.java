@@ -47,4 +47,16 @@ public class TestDynamicLoading {
         Class<?> clazz = loader.load("com.rabbitmq.client.ConnectionFactory");
         assertEquals(clazz.getName(), "com.rabbitmq.client.ConnectionFactory");
     }
+
+    @Test
+    public void testSameInstance() throws Exception {
+        List<Dependency> deps = Collections.singletonList(
+            new Dependency(new DefaultArtifact("com.rabbitmq", "amqp-client", "jar", "4.1.0"), "compile")
+        );
+        List<File> resources = downloader.download(deps, globalConfig.getMavenRepoPath());
+        loader.setResources(resources);
+        Class<?> clazz = loader.load("com.rabbitmq.client.ConnectionFactory");
+        Class<?> anotherClazz = loader.load("com.rabbitmq.client.ConnectionFactory");
+        assertTrue(clazz == anotherClazz);
+    }
 }
