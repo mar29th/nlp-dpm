@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.dpm.test.util;
+package edu.illinois.cs.cogcomp.dpm.test;
 
 import edu.illinois.cs.cogcomp.annotation.Annotator;
 import edu.illinois.cs.cogcomp.annotation.AnnotatorException;
