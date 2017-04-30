@@ -24,6 +24,7 @@ public class CachedLoader implements Loader {
 
     public CachedLoader() {
         cache = new HashMap<>();
+        loader = this.getClass().getClassLoader();
     }
 
     public Class load(String fullQualifiedName) throws ClassNotFoundException {
