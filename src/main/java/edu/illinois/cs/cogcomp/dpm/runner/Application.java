@@ -4,11 +4,8 @@ import edu.illinois.cs.cogcomp.annotation.Annotator;
 import edu.illinois.cs.cogcomp.annotation.AnnotatorException;
 import edu.illinois.cs.cogcomp.annotation.AnnotatorServiceConfigurator;
 import edu.illinois.cs.cogcomp.annotation.BasicAnnotatorService;
-import edu.illinois.cs.cogcomp.annotation.BasicTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.annotation.TextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
-import edu.illinois.cs.cogcomp.core.utilities.configuration.Configurator;
-import edu.illinois.cs.cogcomp.core.utilities.configuration.Property;
 import edu.illinois.cs.cogcomp.core.utilities.configuration.ResourceManager;
 import edu.illinois.cs.cogcomp.dpm.listener.OnDownloaderStatusUpdateListener;
 import edu.illinois.cs.cogcomp.dpm.listener.StatusUpdateEvent;
@@ -20,6 +17,8 @@ import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -56,23 +55,8 @@ public class Application {
 
     private class DummyApplicationStatusUpdateListener implements OnApplicationStatusUpdateListener {
         @Override
-        public void onStarted() {
-            logger.debug("Run started");
-        }
-
-        @Override
-        public void onCompleted() {
-            logger.debug("Run completed");
-        }
-
-        @Override
         public void onUpdate(StatusUpdateEvent event) {
             logger.debug("Run status update");
-        }
-
-        @Override
-        public void onError(Exception e) {
-            logger.debug("Exception from application", e);
         }
     }
 
@@ -125,9 +109,25 @@ public class Application {
         }
     }
 
-    public String run(String text) throws ApplicationException {
-        listener.onStarted();
+    public File runAndSaveFile(String text, String saveFile) throws ApplicationException {
+        File file = new File(saveFile);
+        runAndSaveFile(text, file);
+        return file;
+    }
 
+    public void runAndSaveFile(String text, File saveFile) throws ApplicationException {
+        String retval = run(text);
+        try {
+            FileOutputStream stream = new FileOutputStream(saveFile);
+            stream.write(retval.getBytes());
+        } catch (FileNotFoundException e) {
+            throw new ApplicationException("Cannot open file");
+        } catch (IOException e) {
+            throw new ApplicationException("Cannot write to save file");
+        }
+    }
+
+    public String run(String text) throws ApplicationException {
         // Extract dependencies from PipelineConfig
         List<ViewBean> views = pipelineConfig.getViews();
         List<Dependency> dependencies = new ArrayList<>();
@@ -139,9 +139,7 @@ public class Application {
         try {
             downloader.download(dependencies, globalConfig.getMavenRepoPath());
         } catch (Exception e) {
-            logger.error("Error when downloading dependencies", e);
-            listener.onError(e);
-            return null;
+            throw new ApplicationException("Error when downloading dependencies", e);
         }
 
         /*
@@ -182,8 +180,7 @@ public class Application {
             TextAnnotation ta = bas.createAnnotatedTextAnnotation("", "", text);
             return ta.toString();
         } catch (AnnotatorException e) {
-            e.printStackTrace();
-            return null;
+            throw new ApplicationException("AnnotatorService throws error", e);
         }
     }
 
