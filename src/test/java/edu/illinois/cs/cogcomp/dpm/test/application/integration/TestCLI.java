@@ -7,10 +7,11 @@ import java.io.File;
 
 import edu.illinois.cs.cogcomp.dpm.config.PipelineConfig;
 import edu.illinois.cs.cogcomp.dpm.runner.CLI;
+import edu.illinois.cs.cogcomp.dpm.test.TestFramework;
 
 import static junit.framework.TestCase.assertTrue;
 
-public class TestCLI {
+public class TestCLI extends TestFramework {
 
     private static final PipelineConfig pipelineConfig = new MockPipelineConfig();
 

@@ -50,8 +50,14 @@ public class Application {
 
     private static final boolean SPLIT_ON_DASH = false;
 
-    private static final boolean DEBUG = System.getenv().get("DEBUG") != null &&
-        !System.getenv().get("DEBUG").toLowerCase().equals("true");
+    private static final boolean DEBUG;
+
+    static {
+        DEBUG = System.getenv("DEBUG") != null &&
+                System.getenv("DEBUG").toLowerCase().equals("true") ||
+            System.getenv("debug") != null &&
+                System.getenv("debug").toLowerCase().equals("true");
+    }
 
     private GlobalConfig globalConfig = null;
     private PipelineConfig pipelineConfig = null;
@@ -65,7 +71,12 @@ public class Application {
     private class DummyApplicationStatusUpdateListener implements OnApplicationStatusUpdateListener {
         @Override
         public void onUpdate(StatusUpdateEvent event) {
-            logger.debug("Run status update");
+            logger.debug("Run status update: " + event.getType());
+            if (event.getType() == StatusUpdateEvent.Type.DOWNLOADER_UPDATE) {
+                logger.debug(
+                    "Downloader updated dependencies: {}",
+                    event.getValue("dependencies").toString());
+            }
         }
     }
 

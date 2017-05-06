@@ -6,6 +6,7 @@ import edu.illinois.cs.cogcomp.dpm.config.GlobalConfig;
 import edu.illinois.cs.cogcomp.dpm.config.PipelineConfig;
 import edu.illinois.cs.cogcomp.dpm.runner.Application;
 import edu.illinois.cs.cogcomp.dpm.runner.ApplicationException;
+import edu.illinois.cs.cogcomp.dpm.test.TestFramework;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,7 +15,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class TestApplication {
+public class TestApplication extends TestFramework {
 
     Application app;
     GlobalConfig globalConfig;

@@ -27,11 +27,11 @@ public class StatusUpdateEvent {
         this.type = type;
     }
 
-    public <T> T getValue(String key, Class<T> clazz) {
-        return (T) args.get(key);
+    public Object getValue(String key) {
+        return args.get(key);
     }
 
-    public <T> void putValue(String key, T value) {
+    public void putValue(String key, Object value) {
         args.put(key, value);
     }
 
