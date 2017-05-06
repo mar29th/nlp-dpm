@@ -23,13 +23,21 @@ public class CLI {
         }
 
         String configFilePath = args[0];
+        int exitStatus = 0;
+
         try {
             Application app = Application.create(configFilePath);
             app.run();
         } catch (IOException e) {
             System.err.println("Cannot open config file at " + configFilePath);
+            exitStatus = 1;
         } catch (ApplicationException e) {
             System.err.println(e.getMessage());
+            exitStatus = 1;
+        }
+
+        if (exitStatus != 0) {
+            System.exit(exitStatus);
         }
     }
 }

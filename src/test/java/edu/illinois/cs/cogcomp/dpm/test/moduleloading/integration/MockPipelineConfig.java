@@ -40,4 +40,14 @@ public class MockPipelineConfig implements PipelineConfig {
                     "edu.illinois.edu.cogcomp", "illinois-ner", "3.1.11", "edu.illinois.cs.cogcomp.dpm.test.MockPackageInterface")
         );
     }
+
+    @Override
+    public String getCorpusPath() {
+        return null;
+    }
+
+    @Override
+    public String getOutputPath() {
+        return null;
+    }
 }

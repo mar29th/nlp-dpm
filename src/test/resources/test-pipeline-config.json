@@ -1,0 +1,4 @@
+{
+  "corpusPath": "src/test/resources/pipelinePosText.txt",
+  "outputPath": "output"
+}
