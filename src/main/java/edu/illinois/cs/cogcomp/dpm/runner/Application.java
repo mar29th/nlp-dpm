@@ -11,8 +11,13 @@ import edu.illinois.cs.cogcomp.core.utilities.configuration.ResourceManager;
 import edu.illinois.cs.cogcomp.dpm.listener.OnDownloaderStatusUpdateListener;
 import edu.illinois.cs.cogcomp.dpm.listener.StatusUpdateEvent;
 import edu.illinois.cs.cogcomp.dpm.listener.OnApplicationStatusUpdateListener;
+
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
@@ -21,7 +26,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -45,6 +49,9 @@ import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 public class Application {
 
     private static final boolean SPLIT_ON_DASH = false;
+
+    private static final boolean DEBUG = System.getenv().get("DEBUG") != null &&
+        !System.getenv().get("DEBUG").toLowerCase().equals("true");
 
     private GlobalConfig globalConfig = null;
     private PipelineConfig pipelineConfig = null;
@@ -103,6 +110,13 @@ public class Application {
     }
 
     private void init() {
+        // Initialize logger based on debug level
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration config = ctx.getConfiguration();
+        LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
+        loggerConfig.setLevel(DEBUG ? Level.DEBUG : Level.INFO);
+        ctx.updateLoggers();
+
         // Check if Maven repo exists
         File f = new File(globalConfig.getMavenRepoPath());
         if (!f.exists()) {
