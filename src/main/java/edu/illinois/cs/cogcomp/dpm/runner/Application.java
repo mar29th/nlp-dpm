@@ -6,6 +6,7 @@ import edu.illinois.cs.cogcomp.annotation.AnnotatorServiceConfigurator;
 import edu.illinois.cs.cogcomp.annotation.BasicAnnotatorService;
 import edu.illinois.cs.cogcomp.annotation.TextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
+import edu.illinois.cs.cogcomp.core.io.LineIO;
 import edu.illinois.cs.cogcomp.core.utilities.configuration.ResourceManager;
 import edu.illinois.cs.cogcomp.dpm.listener.OnDownloaderStatusUpdateListener;
 import edu.illinois.cs.cogcomp.dpm.listener.StatusUpdateEvent;
@@ -20,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -109,25 +111,15 @@ public class Application {
         }
     }
 
-    public File runAndSaveFile(String text, String saveFile) throws ApplicationException {
-        File file = new File(saveFile);
-        runAndSaveFile(text, file);
-        return file;
-    }
-
-    public void runAndSaveFile(String text, File saveFile) throws ApplicationException {
-        String retval = run(text);
+    public void run() throws ApplicationException {
+        // Get text from corpus
+        String corpusText;
         try {
-            FileOutputStream stream = new FileOutputStream(saveFile);
-            stream.write(retval.getBytes());
+            corpusText = LineIO.slurp(pipelineConfig.getCorpusPath());
         } catch (FileNotFoundException e) {
-            throw new ApplicationException("Cannot open file");
-        } catch (IOException e) {
-            throw new ApplicationException("Cannot write to save file");
+            throw new ApplicationException("Error when trying to read corpus", e);
         }
-    }
 
-    public String run(String text) throws ApplicationException {
         // Extract dependencies from PipelineConfig
         List<ViewBean> views = pipelineConfig.getViews();
         List<Dependency> dependencies = new ArrayList<>();
@@ -175,12 +167,22 @@ public class Application {
         // Now we have a map of annotators. Run AnnotatorService
         TextAnnotationBuilder builder = new TokenizerTextAnnotationBuilder(new StatefulTokenizer(SPLIT_ON_DASH));
         ResourceManager rm = new AnnotatorServiceConfigurator().getDefaultConfig();
+        TextAnnotation ta;
         try {
             BasicAnnotatorService bas = new BasicAnnotatorService(builder, annotators, rm);
-            TextAnnotation ta = bas.createAnnotatedTextAnnotation("", "", text);
-            return ta.toString();
+            ta = bas.createAnnotatedTextAnnotation("", "", corpusText);
         } catch (AnnotatorException e) {
             throw new ApplicationException("AnnotatorService throws error", e);
+        }
+
+        // Save to output file
+        try {
+            File outputFile = new File(pipelineConfig.getOutputPath());
+            outputFile.createNewFile();
+            FileOutputStream stream = new FileOutputStream(outputFile);
+            stream.write(ta.toString().getBytes());
+        } catch (IOException e) {
+            throw new ApplicationException("Failed to create new file", e);
         }
     }
 

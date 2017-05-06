@@ -7,6 +7,9 @@ public class PipelineConfigBean {
     private List<RepositoryBean> repos = new ArrayList<>();
     private List<ViewBean> views = new ArrayList<>();
 
+    private String corpusPath;
+    private String outputPath;
+
     public PipelineConfigBean() {
     }
 
@@ -29,5 +32,21 @@ public class PipelineConfigBean {
 
     public void setViews(List<ViewBean> views) {
         this.views = views;
+    }
+
+    public String getCorpusPath() {
+        return corpusPath;
+    }
+
+    public void setCorpusPath(String corpusPath) {
+        this.corpusPath = corpusPath;
+    }
+
+    public String getOutputPath() {
+        return outputPath;
+    }
+
+    public void setOutputPath(String outputPath) {
+        this.outputPath = outputPath;
     }
 }

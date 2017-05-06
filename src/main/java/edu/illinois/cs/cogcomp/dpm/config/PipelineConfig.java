@@ -11,4 +11,8 @@ public interface PipelineConfig {
     List<RepositoryBean> getRepositories();
 
     List<ViewBean> getViews();
+
+    String getCorpusPath();
+
+    String getOutputPath();
 }

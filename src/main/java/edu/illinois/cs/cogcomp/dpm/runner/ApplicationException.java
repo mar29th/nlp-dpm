@@ -20,4 +20,9 @@ public class ApplicationException extends Exception {
     public void setInnerException(Exception innerException) {
         this.innerException = innerException;
     }
+
+    @Override
+    public String getMessage() {
+        return super.getMessage() + " " + innerException.getMessage();
+    }
 }

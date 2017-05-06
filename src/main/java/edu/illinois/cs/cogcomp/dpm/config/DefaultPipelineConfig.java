@@ -41,4 +41,13 @@ public class DefaultPipelineConfig implements PipelineConfig {
     public List<ViewBean> getViews() {
         return bean.getViews();
     }
+
+    @Override
+    public String getCorpusPath() {
+        return bean.getCorpusPath();
+    }
+
+    public String getOutputPath() {
+        return bean.getOutputPath();
+    }
 }
