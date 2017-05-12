@@ -46,6 +46,12 @@ import edu.illinois.cs.cogcomp.dpm.sourcesupply.Downloader;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.StatefulTokenizer;
 import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 
+/**
+ * Main application that executes a pipeline based on specified parameters.
+ *
+ * An application is bound to the modules (e.g. global/pipeline config, downloader, etc.) used during instantiation.
+ * Its only use is to execute a pipeline as a whole (see {@link this#run()}).
+ */
 public class Application {
 
     private static final boolean SPLIT_ON_DASH = false;
@@ -92,6 +98,13 @@ public class Application {
             DefaultPipelineConfig.fromJson(new File(configFilePath)));
     }
 
+    /**
+     * Create an instance using provided configurations.
+     *
+     * @param globalConfig Global configuration instance.
+     * @param pipelineConfig Pipeline configuration instance.
+     * @return Instantiated application using provided global and pipeline configs.
+     */
     public static Application create(GlobalConfig globalConfig, PipelineConfig pipelineConfig) {
         StandardConfigModule configModule = new StandardConfigModule(
             globalConfig,
@@ -102,6 +115,17 @@ public class Application {
             .get();
     }
 
+    /**
+     * Constructor that takes core modules as arguments.
+     *
+     * This constructor is used for dependency injection and tests. Only use when customizing individual module
+     * is necessary. Prefer to use {@link this#create(GlobalConfig, PipelineConfig)}.
+     *
+     * @param globalConfig Global configuration instance.
+     * @param pipelineConfig Pipeline configuration instance.
+     * @param downloader Downloader instance.
+     * @param loader Dynamic loader instance.
+     */
     @Inject
     public Application(
             GlobalConfig globalConfig,
@@ -136,6 +160,19 @@ public class Application {
         }
     }
 
+    /**
+     * Execute the application according to parameters specified in {@link PipelineConfig}.
+     *
+     * A run mainly consists of:
+     * <ol>
+     *     <li>Read corpus as whole {@link String}</li>
+     *     <li>Download dependencies using specs in application's {@link PipelineConfig}.</li>
+     *     <li>Extract <code>getAnnotator()</code> method from a dependency's entrypoint, and get {@link Annotator}.</li>
+     *     <li>Run the pipeline using {@link edu.illinois.cs.cogcomp.annotation.AnnotatorService}</li>
+     * </ol>
+     *
+     * @throws ApplicationException Error taken place on certain phase of execution.
+     */
     public void run() throws ApplicationException {
         // Get text from corpus
         String corpusText;
@@ -211,10 +248,20 @@ public class Application {
         }
     }
 
+    /**
+     * Returns application status listener set.
+     *
+     * @return Application status listener set in this application.
+     */
     public OnApplicationStatusUpdateListener getOnRunnerStatusUpdateListener() {
         return listener;
     }
 
+    /**
+     * Set application status listener.
+     *
+     * @param listener Application status listener.
+     */
     public void setOnRunnerStatusUpdateListener(OnApplicationStatusUpdateListener listener) {
         if (listener == null) {
             listener = new DummyApplicationStatusUpdateListener();
