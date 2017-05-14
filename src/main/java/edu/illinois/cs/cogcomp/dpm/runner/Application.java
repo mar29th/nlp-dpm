@@ -50,7 +50,7 @@ import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
  * Main application that executes a pipeline based on specified parameters.
  *
  * An application is bound to the modules (e.g. global/pipeline config, downloader, etc.) used during instantiation.
- * Its only use is to execute a pipeline as a whole (see {@link this#run()}).
+ * Its only use is to execute a pipeline as a whole (see {@link Application#run()}).
  */
 public class Application {
 
@@ -119,7 +119,7 @@ public class Application {
      * Constructor that takes core modules as arguments.
      *
      * This constructor is used for dependency injection and tests. Only use when customizing individual module
-     * is necessary. Prefer to use {@link this#create(GlobalConfig, PipelineConfig)}.
+     * is necessary. Prefer to use {@link Application#create(GlobalConfig, PipelineConfig)}.
      *
      * @param globalConfig Global configuration instance.
      * @param pipelineConfig Pipeline configuration instance.

@@ -13,3 +13,6 @@ buildNumber.properties
 
 # Avoid generated annotation-cache in test
 annotation-cache
+
+# Exclude Javadoc
+javadoc
