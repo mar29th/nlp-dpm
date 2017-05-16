@@ -12,6 +12,8 @@ public class ViewBean {
 
     private Map<String, Object> options;
 
+    public ViewBean() {}
+
     public ViewBean(String groupId) {
         this.groupId = groupId;
     }

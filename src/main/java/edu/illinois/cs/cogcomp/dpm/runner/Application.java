@@ -7,6 +7,7 @@ import edu.illinois.cs.cogcomp.annotation.BasicAnnotatorService;
 import edu.illinois.cs.cogcomp.annotation.TextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.core.io.LineIO;
+import edu.illinois.cs.cogcomp.core.utilities.SerializationHelper;
 import edu.illinois.cs.cogcomp.core.utilities.configuration.ResourceManager;
 import edu.illinois.cs.cogcomp.dpm.listener.OnDownloaderStatusUpdateListener;
 import edu.illinois.cs.cogcomp.dpm.listener.StatusUpdateEvent;
@@ -242,7 +243,7 @@ public class Application {
             File outputFile = new File(pipelineConfig.getOutputPath());
             outputFile.createNewFile();
             FileOutputStream stream = new FileOutputStream(outputFile);
-            stream.write(ta.toString().getBytes());
+            stream.write(SerializationHelper.serializeToJson(ta).getBytes());
         } catch (IOException e) {
             throw new ApplicationException("Failed to create new file", e);
         }

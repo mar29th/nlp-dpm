@@ -15,6 +15,10 @@ public class DefaultPipelineConfig implements PipelineConfig {
     private String projectPath = null;
     private PipelineConfigBean bean = null;
 
+    public static DefaultPipelineConfig fromJson(String filePath) throws IOException {
+        return fromJson(new File(filePath));
+    }
+
     public static DefaultPipelineConfig fromJson(File inFile) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         PipelineConfigBean bean = mapper.readValue(inFile, PipelineConfigBean.class);
