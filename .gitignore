@@ -16,3 +16,6 @@ annotation-cache
 
 # Exclude Javadoc
 javadoc
+
+# Exclude saved output file
+output
