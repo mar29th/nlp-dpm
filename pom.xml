@@ -89,6 +89,12 @@
             <version>1.16.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>edu.illinois.cs.cogcomp</groupId>
+            <artifactId>illinois-pos</artifactId>
+            <version>3.1.12</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
