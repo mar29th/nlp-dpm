@@ -3,7 +3,7 @@
 This application reads configuration file and execute a pipeline
 according to parameters specified. It consists of the following modules:
 
-* [Application](#application-module)
+* [Application](#main-application-module)
 * [Configuration](#configuration-module)
 * [Source Supply](#source-supply-module)
 * [Dynamic module loading](#dynamic-module-loading)
@@ -44,7 +44,7 @@ The configuration file must contain a valid JSON string. Complete schema is:
       "groupId": "edu.illinois.edu.cogcomp",
       "artifactId": "doesnt-matter-yet",
       "version": "3.1.11",
-      "entrypoint": "edu.illinois.cs.cogcomp.dpm.test.MockPackageInterface"
+      "entrypoint": "edu.illinois.cs.cogcomp.dpm.test.DemoEntrypoint"
     }
   ]
 }
@@ -61,7 +61,7 @@ __MUST__ provide a no-args method `getAnnotator()` which returns an `Annotator`.
 Example:
 ```java
 public class DemoEntrypoint {
-    public getAnnotator() {
+    public Annotator getAnnotator() {
         return new DoesNotDoAnythingAnnotator();
     }
 }
