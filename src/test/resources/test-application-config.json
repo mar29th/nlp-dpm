@@ -1,0 +1,21 @@
+{
+  "corpusPath": "src/test/resources/pipelinePosText.txt",
+  "outputPath": "output",
+  "repos": [
+    {
+      "name": "central",
+      "location": "http://repo1.maven.org/maven2"
+    }, {
+      "name": "cogcomp",
+      "location": "http://cogcomp.cs.illinois.edu/m2repo"
+    }
+  ],
+  "views": [
+    {
+      "groupId": "edu.illinois.edu.cogcomp",
+      "artifactId": "doesnt-matter-yet",
+      "version": "3.1.11",
+      "entrypoint": "edu.illinois.cs.cogcomp.dpm.test.MockPackageInterface"
+    }
+  ]
+}

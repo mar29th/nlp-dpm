@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.dpm.test.application.integration;
+package edu.illinois.cs.cogcomp.dpm.test.application;
 
 import edu.illinois.cs.cogcomp.dpm.listener.OnDownloaderStatusUpdateListener;
 import edu.illinois.cs.cogcomp.dpm.sourcesupply.Downloader;

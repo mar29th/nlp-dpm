@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.dpm.test.application.integration;
+package edu.illinois.cs.cogcomp.dpm.test.application;
 
 import edu.illinois.cs.cogcomp.dpm.module.Loader;
 import edu.illinois.cs.cogcomp.dpm.test.MockPackageInterface;

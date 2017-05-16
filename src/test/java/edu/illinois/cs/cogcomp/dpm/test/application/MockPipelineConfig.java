@@ -1,4 +1,4 @@
-package edu.illinois.cs.cogcomp.dpm.test.application.integration;
+package edu.illinois.cs.cogcomp.dpm.test.application;
 
 import java.io.File;
 import java.io.IOException;
