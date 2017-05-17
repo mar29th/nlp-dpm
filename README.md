@@ -3,7 +3,7 @@
 This application reads configuration file and execute a pipeline
 according to parameters specified. It consists of the following modules:
 
-* [Application](#application-module)
+* [Application](#main-application-module)
 * [Configuration](#configuration-module)
 * [Source Supply](#source-supply-module)
 * [Dynamic module loading](#dynamic-module-loading)
@@ -44,7 +44,7 @@ The configuration file must contain a valid JSON string. Complete schema is:
       "groupId": "edu.illinois.edu.cogcomp",
       "artifactId": "doesnt-matter-yet",
       "version": "3.1.11",
-      "entrypoint": "edu.illinois.cs.cogcomp.dpm.test.MockPackageInterface"
+      "entrypoint": "edu.illinois.cs.cogcomp.dpm.test.DemoEntrypoint"
     }
   ]
 }
@@ -61,7 +61,7 @@ __MUST__ provide a no-args method `getAnnotator()` which returns an `Annotator`.
 Example:
 ```java
 public class DemoEntrypoint {
-    public getAnnotator() {
+    public Annotator getAnnotator() {
         return new DoesNotDoAnythingAnnotator();
     }
 }
@@ -74,12 +74,19 @@ project is more of a demo, `Application` serves as more of a top-level class
 that interfaces directly with command line.
 
 ### Suggestion For Future Developments
+1. GUI:
 Since running JARs require JVM and terminal, it might be better to provide a bash
 script that can hide this step for inexperienced users. To go further,
 it may be good to have a GUI, so users can operate directly
 and won't even touch the command line at all. To do this, one may want to
-change method interface in `Application` to return a `TextAnnotation`,
+change `run()` method interface in `Application` to return a `TextAnnotation`,
 since it currently only save result to file and doesn't return anything.
+
+2. Possibility for API:
+Just as Maven, it is possible to run the application as a executable or
+import as external library in some other project. In this case, one still
+ need to change `Application` to be more generic, rather than complete
+ one whole run in a single `run()` call (a specific approach).
 
 
 ## Configuration Module
@@ -87,7 +94,7 @@ This module contains POJOs (beans) of configuration format, and config provider
 module interfaces.
 
 ### Global Config
-Mostly same role as `~/.bashrc` and `./.vimrc`, except that currently it does not
+Mostly same role as `~/.bashrc` and `~/.vimrc`, except that currently it does not
 actually read the config from any file. Values in this config is always reused
 across runs. The default configurations are hardcoded, such as the
 download cache directory for the application.
@@ -96,7 +103,7 @@ download cache directory for the application.
 The config is run-specific, which specifies the parameters of any specific run.
 Config for one run is irrelevant to next run. This config provides repositories
 link or needed views of this particular run. It can be read from JSON files as
-shown [above](#getting-started).
+shown [above](#configuration-schema).
 
 
 ## Source Supply Module
