@@ -28,10 +28,13 @@ public class CachedLoader implements Loader {
     }
 
     public Class load(String fullQualifiedName) throws ClassNotFoundException {
+        // Get class from cache if any
         Class clazz = cache.get(fullQualifiedName);
         if (clazz != null) {
             return clazz;
         }
+
+        // If not found, then load using URLClassLoader
         clazz = loader.loadClass(fullQualifiedName);
         cache.put(fullQualifiedName, clazz);
         return clazz;

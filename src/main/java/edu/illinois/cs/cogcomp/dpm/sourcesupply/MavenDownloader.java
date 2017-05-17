@@ -47,6 +47,8 @@ public class MavenDownloader implements Downloader {
         listener.onUpdate(new StatusUpdateEvent(StatusUpdateEvent.Type.DOWNLOADER_STARTED));
 
         Set<RemoteRepository> remoteRepos = new HashSet<>();
+
+        // Get repos and for each convert to RemoteRepository for Aether API
         List<RepositoryBean> pipelineRepos = pipelineConfig.getRepositories();
         for (RepositoryBean pipelineRepo : pipelineRepos) {
             remoteRepos.add(new RemoteRepository(
@@ -55,10 +57,12 @@ public class MavenDownloader implements Downloader {
         }
         aether.setRemoteRepositories(remoteRepos);
 
+        // Add dependencies
         for (Dependency dependency : dependencyList) {
             aether.addDependency(dependency);
         }
         aether.setLocalRepoPath(globalConfig.getMavenRepoPath());
+        // Resolve dependencies and prerequisites
         aether.resolveDependencies(); // Block on current thread and is time consuming
         List<String> resolvedDependencies = new ArrayList<>(aether.getDependenciesNotation());
 
@@ -66,6 +70,7 @@ public class MavenDownloader implements Downloader {
         event.putValue("dependencies", resolvedDependencies);
         listener.onUpdate(event);
 
+        // Download source from remote
         List<File> returned = aether.downloadArtifacts(resolvedDependencies);
 
         event = new StatusUpdateEvent(StatusUpdateEvent.Type.DOWNLOADER_COMPLETED);
