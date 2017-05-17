@@ -73,6 +73,13 @@ The main application reads parameters directly from config files, and on each
 project is more of a demo, `Application` serves as more of a top-level class
 that interfaces directly with command line.
 
+### Execution Procedure
+1. Read configuration
+2. Resolve dependencies
+3. Download dependencies
+4. Inject dependencies to application, get `Annotator` from interface
+5. Add all `Annotator`s to `AnnotatorService` and run.
+
 ### Suggestion For Future Developments
 1. GUI:
 Since running JARs require JVM and terminal, it might be better to provide a bash
@@ -85,8 +92,9 @@ since it currently only save result to file and doesn't return anything.
 2. Possibility for API:
 Just as Maven, it is possible to run the application as a executable or
 import as external library in some other project. In this case, one still
- need to change `Application` to be more generic, rather than complete
- one whole run in a single `run()` call (a specific approach).
+need to change `Application` to be more generic. The current implementation
+is only to complete one whole run in a single `run()` call (a single scenario),
+without any other API method in `Application` class.
 
 
 ## Configuration Module
@@ -125,3 +133,20 @@ Due to static-type nature, Java requires reflection to get a method
 from a black-box (dynamic module), which means we need a defined set of
 interfaces that an external module should conform. For interface definition,
 please see [above](#preparing-for-dynamic-module-loading).
+
+### Default (cached) Implementation
+The loader will first check local cache (just a `HashMap`) whether a
+particular classpath has been loaded before.
+* If yes, directly return value in cache.
+* Otherwise use
+[`URLClassLoader`](https://docs.oracle.com/javase/7/docs/api/java/net/URLClassLoader.html)
+and get a
+[`Class`](https://docs.oracle.com/javase/7/docs/api/java/lang/Class.html)
+wrapper of an object,
+which can give new instances of an object by
+[`Class#newInstance()`](https://docs.oracle.com/javase/7/docs/api/java/lang/Class.html#newInstance()).
+
+[`URLClassLoader`](https://docs.oracle.com/javase/7/docs/api/java/net/URLClassLoader.html)
+search a classpath from a set of `File`s, hence the
+`Loader#setResources(List<File>)`. Give a null content if not needed during
+implementation.
